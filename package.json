@@ -1,0 +1,19 @@
+{
+	"name": "node-blog",
+	"version": "1.0.0",
+	"main": "index.js",
+	"license": "MIT",
+	"scripts": {
+		"start": "node server.js",
+		"dev": "nodemon --legacy-watch server.js",
+		"docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
+	},
+	"dependencies": {
+		"dotenv": "^17.2.3",
+		"express": "^5.1.0"
+	},
+	"devDependencies": {
+		"nodemon": "^3.1.10"
+	}
+}

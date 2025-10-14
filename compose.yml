@@ -1,0 +1,14 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node_blog
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    volumes:
+      - .:/app # Đồng bộ code từ host vào container
+      - /app/node_modules # Giữ node_modules riêng trong container
+    command: yarn dev
