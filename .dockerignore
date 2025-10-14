@@ -1,0 +1,26 @@
+# Node modules (được cài trong container)
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Git và các file không cần thiết
+.git
+.gitignore
+
+# Cache / Logs / Editor
+.DS_Store
+*.log
+*.tmp
+.vscode
+.idea
+
+# Test và coverage
+tests
+coverage
+
+# Env file (tránh build lộ key)
+.env
+
+# Docker build files
+Dockerfile
+docker-compose.yml
