@@ -8,4 +8,6 @@ router.post("/register", catchAsync(authController.registerPost));
 
 router.post("/login", catchAsync(authController.loginPost));
 
+router.post("/logout", catchAsync(authController.logout));
+
 module.exports = router;

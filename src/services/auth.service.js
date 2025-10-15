@@ -5,6 +5,7 @@ const ErrorRespone = require("../helpers/errorRespone");
 const User = require("../models/user.model");
 const RefreshToken = require("../models/refreshToken.model");
 const redisInstance = require("../config/redis");
+const { token } = require("morgan");
 
 const registerService = async ({ username, password, email, fullName }) => {
 	// kiem tra username va email
@@ -74,4 +75,9 @@ const loginService = async ({ username, password }) => {
 	return { accessToken, refreshToken };
 };
 
-module.exports = { registerService, loginService };
+const logoutService = async (token) => {
+	await RefreshToken.deleteOne({ token });
+	return;
+};
+
+module.exports = { registerService, loginService, logoutService };

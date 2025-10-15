@@ -1,7 +1,11 @@
 const { StatusCodes } = require("http-status-codes");
 
 const { sendSuccessResponse } = require("../helpers/apiRespone");
-const { registerService, loginService } = require("../services/auth.service");
+const {
+	registerService,
+	loginService,
+	logoutService,
+} = require("../services/auth.service");
 
 const registerPost = async (req, res) => {
 	const { username, password, email, fullName } = req.body;
@@ -45,7 +49,24 @@ const loginPost = async (req, res) => {
 	);
 };
 
+const logout = async (req, res) => {
+	const token = req.cookies?.refreshToken;
+	console.log(token);
+	if (token) {
+		await logoutService(token);
+	}
+	res.clearCookie("refreshToken");
+	return sendSuccessResponse(
+		res,
+		null,
+		"success",
+		"Đã đăng xuất !",
+		StatusCodes.OK,
+	);
+};
+
 module.exports = {
 	registerPost,
 	loginPost,
+	logout,
 };
