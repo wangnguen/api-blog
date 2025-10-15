@@ -6,8 +6,8 @@ const sendSuccessResponse = (
 	status = 200,
 ) => {
 	const response = { code, data, message };
-	console.log(message, { data: data ? { id: data._id || data.id } : null });
-	res.status(status).json(response);
+	console.log(message, { data: data ? data : null });
+	return res.status(status).json(response);
 };
 
 const sendErrorResponse = (
@@ -21,7 +21,7 @@ const sendErrorResponse = (
 		message,
 	};
 	console.log(message);
-	res.status(status).json(response);
+	return res.status(status).json(response);
 };
 
 module.exports = { sendSuccessResponse, sendErrorResponse };

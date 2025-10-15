@@ -6,8 +6,6 @@ const {
 
 const urlString = `redis://${username}:${password}@${host}:${port}`;
 
-console.log(urlString);
-
 class RedisDatabase {
 	constructor() {
 		this.connect();

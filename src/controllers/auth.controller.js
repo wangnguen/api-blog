@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 
 const { sendSuccessResponse } = require("../helpers/apiRespone");
-const { registerService } = require("../services/auth.service");
+const { registerService, loginService } = require("../services/auth.service");
 
 const registerPost = async (req, res) => {
 	const { username, password, email, fullName } = req.body;
@@ -12,7 +12,7 @@ const registerPost = async (req, res) => {
 		fullName,
 	});
 
-	sendSuccessResponse(
+	return sendSuccessResponse(
 		res,
 		newUser,
 		"success",
@@ -21,6 +21,31 @@ const registerPost = async (req, res) => {
 	);
 };
 
+const loginPost = async (req, res) => {
+	const { username, password } = req.body;
+	await loginService({ username, password });
+	const { accessToken, refreshToken } = await loginService({
+		username,
+		password,
+	});
+
+	res.cookie("refreshToken", refreshToken, {
+		httpOnly: true,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "strict",
+		maxAge: 7 * 24 * 60 * 60 * 1000,
+	});
+
+	return sendSuccessResponse(
+		res,
+		{ accessToken },
+		"success",
+		"Đăng nhập thành công !",
+		StatusCodes.OK,
+	);
+};
+
 module.exports = {
 	registerPost,
+	loginPost,
 };
