@@ -1,9 +1,9 @@
+const { sendErrorResponse } = require("../helpers/apiRespone");
+
 // middleware/errorHandler
 module.exports = (err, req, res, next) => {
-	console.error("Error caught by middleware:", err.stack);
-
-	res.status(err.status || 500).json({
-		status: err.status || 500,
-		message: err.message || "Internal Server Error",
-	});
+	const status = err.status || 500;
+	const message = err.message || "Internal Server Error";
+	const code = "error";
+	sendErrorResponse(res, code, message, status);
 };
