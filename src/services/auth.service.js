@@ -80,4 +80,20 @@ const logoutService = async (token) => {
 	return;
 };
 
-module.exports = { registerService, loginService, logoutService };
+const refreshService = ({ id, username }) => {
+	const newAccessToken = jwt.sign(
+		{ id, username },
+		process.env.ACCESS_TOKEN_SECRET,
+		{
+			expiresIn: "15m",
+		},
+	);
+	return newAccessToken;
+};
+
+module.exports = {
+	registerService,
+	loginService,
+	logoutService,
+	refreshService,
+};

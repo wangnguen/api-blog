@@ -1,10 +1,10 @@
 const { StatusCodes } = require("http-status-codes");
-
 const { sendSuccessResponse } = require("../helpers/apiRespone");
 const {
 	registerService,
 	loginService,
 	logoutService,
+	refreshService,
 } = require("../services/auth.service");
 
 const registerPost = async (req, res) => {
@@ -65,8 +65,22 @@ const logout = async (req, res) => {
 	);
 };
 
+const refresh = async (req, res) => {
+	const { id, username } = req.user;
+	const newAccessToken = refreshService({ id, username });
+
+	return sendSuccessResponse(
+		res,
+		{ newAccessToken },
+		"success",
+		"Làm mới access token thành công !",
+		StatusCodes.OK,
+	);
+};
+
 module.exports = {
 	registerPost,
 	loginPost,
 	logout,
+	refresh,
 };

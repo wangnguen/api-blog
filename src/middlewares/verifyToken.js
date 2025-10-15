@@ -37,4 +37,43 @@ const verifyToken = (req, res, next) => {
 	}
 };
 
-module.exports = { verifyToken };
+const verifyRefreshToken = (req, res, next) => {
+	try {
+		const token = req.cookies?.refreshToken;
+		if (!token) {
+			return sendErrorResponse(
+				res,
+				"error",
+				"Không tìm thấy refresh token",
+				StatusCodes.UNAUTHORIZED,
+			);
+		}
+
+		const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+		req.user = decoded;
+		next();
+	} catch (error) {
+		if (error.name === "TokenExpiredError") {
+			res.clearCookie("refreshToken", {
+				httpOnly: true,
+				secure: true,
+				sameSite: "strict",
+			});
+			return sendErrorResponse(
+				res,
+				"error",
+				"Refresh token đã hết hạn. Vui lòng đăng nhập lại.",
+				StatusCodes.UNAUTHORIZED,
+			);
+		}
+
+		return sendErrorResponse(
+			res,
+			"error",
+			"Refresh token không hợp lệ.",
+			StatusCodes.UNAUTHORIZED,
+		);
+	}
+};
+
+module.exports = { verifyToken, verifyRefreshToken };
