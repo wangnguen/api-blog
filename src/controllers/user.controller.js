@@ -24,6 +24,12 @@ const getMe = async (req, res) => {
 const updateProfile = async (req, res) => {
 	const { id } = req.user;
 
+	if (req.file) {
+		req.body.avatar = req.file.path;
+	} else {
+		delete req.body.avatar;
+	}
+
 	const updatedUser = await updateProfileService({ id, data: req.body });
 
 	return sendSuccessResponse(
