@@ -2,6 +2,7 @@
 const jwt = require("jsonwebtoken");
 const { sendErrorResponse } = require("../helpers/apiRespone");
 const { StatusCodes } = require("http-status-codes");
+const RefreshToken = require("../models/refreshToken.model");
 
 const verifyToken = (req, res, next) => {
 	const authHeader = req.headers.authorization;
@@ -28,24 +29,43 @@ const verifyToken = (req, res, next) => {
 		req.user = decoded;
 		next();
 	} catch (err) {
-		return sendErrorResponse(
-			res,
-			"error",
-			"Token hết hạn hoặc không hợp lệ !",
-			StatusCodes.UNAUTHORIZED,
-		);
+		return sendErrorResponse(res, "error");
 	}
 };
 
-const verifyRefreshToken = (req, res, next) => {
+const verifyRefreshToken = async (req, res, next) => {
 	try {
 		const token = req.cookies?.refreshToken;
 		if (!token) {
 			return sendErrorResponse(
 				res,
 				"error",
-				"Không tìm thấy refresh token",
+				"Token không hợp lệ !",
 				StatusCodes.UNAUTHORIZED,
+			);
+		}
+
+		// so sanh voi trong db
+		const isMatchToken = await RefreshToken.findOne({
+			token,
+		});
+
+		if (!isMatchToken) {
+			return sendErrorResponse(
+				res,
+				"error",
+				"Token không hợp lệ  hoặc đã hết hạn !",
+				StatusCodes.FORBIDDEN,
+			);
+		}
+
+		// kiem tra het han
+		if (isMatchToken.expiresAt < new Date()) {
+			return sendErrorResponse(
+				res,
+				"error",
+				"Token đã hết hạn !",
+				StatusCodes.FORBIDDEN,
 			);
 		}
 
@@ -53,26 +73,12 @@ const verifyRefreshToken = (req, res, next) => {
 		req.user = decoded;
 		next();
 	} catch (error) {
-		if (error.name === "TokenExpiredError") {
-			res.clearCookie("refreshToken", {
-				httpOnly: true,
-				secure: true,
-				sameSite: "strict",
-			});
-			return sendErrorResponse(
-				res,
-				"error",
-				"Refresh token đã hết hạn. Vui lòng đăng nhập lại.",
-				StatusCodes.UNAUTHORIZED,
-			);
-		}
-
-		return sendErrorResponse(
-			res,
-			"error",
-			"Refresh token không hợp lệ.",
-			StatusCodes.UNAUTHORIZED,
-		);
+		res.clearCookie("refreshToken", {
+			httpOnly: true,
+			secure: true,
+			sameSite: "strict",
+		});
+		return sendErrorResponse(res, "error");
 	}
 };
 

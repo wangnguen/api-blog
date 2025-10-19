@@ -21,6 +21,15 @@ const refreshTokenSchema = new mongoose.Schema(
 	},
 );
 
+// tu dong xoa khi het han
+
+refreshTokenSchema.index(
+	{ expiresAt: 1 },
+	{
+		expireAfterSeconds: 0,
+	},
+);
+
 const RefreshToken = mongoose.model(
 	"RefreshToken",
 	refreshTokenSchema,
