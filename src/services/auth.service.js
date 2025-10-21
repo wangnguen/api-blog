@@ -4,8 +4,6 @@ const jwt = require("jsonwebtoken");
 const ErrorRespone = require("../helpers/errorRespone");
 const User = require("../models/user.model");
 const RefreshToken = require("../models/refreshToken.model");
-const redisInstance = require("../config/redis");
-const { token } = require("morgan");
 
 const registerService = async ({ username, password, email, fullName }) => {
 	// kiem tra username va email

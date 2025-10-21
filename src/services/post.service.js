@@ -6,7 +6,7 @@ const { generateSlug } = require("../utils/generate");
 const { paginate } = require("../utils/pagination");
 const { delCache, getCache, setCache, remember } = require("./cache.service");
 const Like = require("../models/like.model");
-const ErrorRespone = require("../helpers/errorRespone");
+const ErrorResponse = require("../helpers/errorRespone");
 
 module.exports.getAllPostsService = async (query) => {
 	const filter = { deleted: false };
@@ -50,7 +50,7 @@ module.exports.createPostService = async (userId, data) => {
 	});
 
 	if (!existingCategory) {
-		throw new ErrorResponse(StatusCodes.BAD_REQUEST, "Category không tồn tại");
+		throw new ErrorResponse(StatusCodes.NOT_FOUND, "Category không tồn tại");
 	}
 
 	// check tag khong co tag thi tao moi
@@ -122,7 +122,7 @@ module.exports.updatePostService = async (id, data) => {
 	);
 
 	if (!updatedPost) {
-		throw new ErrorRespone(StatusCodes.BAD_REQUEST, "Bài viết không tồn tại !");
+		throw new ErrorResponse(StatusCodes.NOT_FOUND, "Bài viết không tồn tại !");
 	}
 
 	return updatedPost;
@@ -132,7 +132,7 @@ module.exports.deletePostService = async (id, data) => {
 	const updatedPost = await Post.findOne({ _id: id, deleted: false });
 
 	if (!updatedPost) {
-		throw new ErrorRespone(StatusCodes.BAD_REQUEST, "Bài viết không tồn tại !");
+		throw new ErrorResponse(StatusCodes.NOT_FOUND, "Bài viết không tồn tại !");
 	}
 
 	updatedPost.deleted = true;
@@ -146,7 +146,7 @@ module.exports.toggleLikeService = async (userId, postId) => {
 	const existingPost = await Post.findOne({ _id: postId, deleted: false });
 
 	if (!existingPost)
-		throw new ErrorRespone(StatusCodes.NOT_FOUND, "Bài viết không tồn tại");
+		throw new ErrorResponse(StatusCodes.NOT_FOUND, "Bài viết không tồn tại");
 
 	// Check user da like chua
 	const existingLike = await Like.findOne({ postId, userId });
@@ -173,7 +173,7 @@ module.exports.toggleLikeService = async (userId, postId) => {
 		_id: postId,
 		deleted: false,
 	}).select("likesCount");
-	console.log(updatedPost);
+	
 	return {
 		liked,
 		likesCount: updatedPost.likesCount,
@@ -184,7 +184,7 @@ module.exports.getLikesService = async (postId) => {
 	const existingPost = await Post.findOne({ _id: postId, deleted: false });
 
 	if (!existingPost)
-		throw new ErrorRespone(StatusCodes.NOT_FOUND, "Bài viết không tồn tại");
+		throw new ErrorResponse(StatusCodes.NOT_FOUND, "Bài viết không tồn tại");
 
 	const likes = await Like.find({ postId: postId })
 		.populate("userId", "username fullName avatar")

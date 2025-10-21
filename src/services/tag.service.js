@@ -38,7 +38,7 @@ module.exports.getTagService = async (slug) => {
 	});
 
 	if (!existingTag) {
-		throw new ErrorRespone(StatusCodes.BAD_REQUEST, "Tag không tồn tại !");
+		throw new ErrorRespone(StatusCodes.NOT_FOUND, "Tag không tồn tại !");
 	}
 
 	return existingTag;
@@ -51,7 +51,7 @@ module.exports.deleteService = async (id) => {
 	});
 
 	if (!existingTag) {
-		throw new ErrorRespone(StatusCodes.BAD_REQUEST, "Tag không tồn tại");
+		throw new ErrorRespone(StatusCodes.NOT_FOUND, "Tag không tồn tại");
 	}
 
 	existingTag.deleted = true;

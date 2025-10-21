@@ -51,7 +51,7 @@ const loginPost = async (req, res) => {
 
 const logout = async (req, res) => {
 	const token = req.cookies?.refreshToken;
-	console.log(token);
+
 	if (token) {
 		await logoutService(token);
 	}
