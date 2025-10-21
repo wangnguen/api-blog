@@ -5,6 +5,8 @@ const Tag = require("../models/tag.model");
 const { generateSlug } = require("../utils/generate");
 const { paginate } = require("../utils/pagination");
 const { delCache, getCache, setCache, remember } = require("./cache.service");
+const Like = require("../models/like.model");
+const ErrorRespone = require("../helpers/errorRespone");
 
 module.exports.getAllPostsService = async (query) => {
 	const filter = { deleted: false };
@@ -138,4 +140,55 @@ module.exports.deletePostService = async (id, data) => {
 	updatedPost.save();
 
 	return updatedPost;
+};
+
+module.exports.toggleLikeService = async (userId, postId) => {
+	const existingPost = await Post.findOne({ _id: postId, deleted: false });
+
+	if (!existingPost)
+		throw new ErrorRespone(StatusCodes.NOT_FOUND, "Bài viết không tồn tại");
+
+	// Check user da like chua
+	const existingLike = await Like.findOne({ postId, userId });
+
+	let liked;
+	if (existingLike) {
+		// Da like → unlike
+		await Promise.all([
+			existingLike.deleteOne(),
+			Post.findOneAndUpdate({ _id: postId }, { $inc: { likesCount: -1 } }),
+		]);
+		liked = false;
+	} else {
+		// chua like -> tao moi
+		await Promise.all([
+			Like.create({ postId, userId }),
+			Post.findOneAndUpdate({ _id: postId }, { $inc: { likesCount: 1 } }),
+		]);
+		liked = true;
+	}
+
+	// Lay lai luot thich moi nhat
+	const updatedPost = await Post.findOne({
+		_id: postId,
+		deleted: false,
+	}).select("likesCount");
+	console.log(updatedPost);
+	return {
+		liked,
+		likesCount: updatedPost.likesCount,
+	};
+};
+
+module.exports.getLikesService = async (postId) => {
+	const existingPost = await Post.findOne({ _id: postId, deleted: false });
+
+	if (!existingPost)
+		throw new ErrorRespone(StatusCodes.NOT_FOUND, "Bài viết không tồn tại");
+
+	const likes = await Like.find({ postId: postId })
+		.populate("userId", "username fullName avatar")
+		.sort({ createdAt: -1 });
+
+	return likes;
 };

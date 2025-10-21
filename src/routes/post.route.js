@@ -18,4 +18,8 @@ router.patch("/:id", verifyToken, catchAsync(postController.updatePost));
 
 router.delete("/:id", verifyToken, catchAsync(postController.deletePost));
 
+router.post("/:id/like", verifyToken, catchAsync(postController.toggleLike));
+
+router.get("/:id/likes", catchAsync(postController.getLikes));
+
 module.exports = router;

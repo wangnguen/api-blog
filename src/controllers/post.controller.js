@@ -7,6 +7,8 @@ const {
 	getPostDetailService,
 	updatePostService,
 	deletePostService,
+	toggleLikeService,
+	getLikesService,
 } = require("../services/post.service");
 
 module.exports.getAllPosts = async (req, res) => {
@@ -81,6 +83,35 @@ module.exports.deletePost = async (req, res) => {
 		null,
 		"success",
 		"Xoá bài viết thành công !",
+		StatusCodes.OK,
+	);
+};
+
+module.exports.toggleLike = async (req, res) => {
+	const userId = req.user.id;
+	const postId = req.params.id;
+
+	const { liked, likesCount } = await toggleLikeService(userId, postId);
+
+	return sendSuccessResponse(
+		res,
+		{ liked, likesCount },
+		"success",
+		"Like bài viết thành công !",
+		StatusCodes.OK,
+	);
+};
+
+module.exports.getLikes = async (req, res) => {
+	const postId = req.params.id;
+	console.log(postId);
+	const likes = await getLikesService(postId);
+
+	return sendSuccessResponse(
+		res,
+		likes,
+		"success",
+		"Lấy danh sách người đã thích thành công !",
 		StatusCodes.OK,
 	);
 };
