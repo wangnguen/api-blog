@@ -6,6 +6,7 @@ const authRoute = require("./auth.route");
 const categoryRoute = require("./category.route");
 const userRoute = require("./user.route");
 const tagRoute = require("./tag.route");
+const postRoute = require("./post.route");
 
 router.use("/auth", authRoute);
 
@@ -14,6 +15,8 @@ router.use("/categories", verifyToken, categoryRoute);
 router.use("/users", userRoute);
 
 router.use("/tags", tagRoute);
+
+router.use("/posts", postRoute);
 
 router.use((req, res) => {
 	res.status(404).json({

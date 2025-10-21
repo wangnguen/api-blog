@@ -82,4 +82,20 @@ const verifyRefreshToken = async (req, res, next) => {
 	}
 };
 
-module.exports = { verifyToken, verifyRefreshToken };
+const optionalAuth = async (req, res, next) => {
+	try {
+		const token = req.headers.authorization?.split(" ")[1];
+		if (!token) {
+			req.user = null;
+			return next();
+		}
+
+		req.user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+		next();
+	} catch {
+		req.user = null;
+		next();
+	}
+};
+
+module.exports = { verifyToken, verifyRefreshToken, optionalAuth };
