@@ -7,6 +7,7 @@ const categoryRoute = require("./category.route");
 const userRoute = require("./user.route");
 const tagRoute = require("./tag.route");
 const postRoute = require("./post.route");
+const commentRoute = require("./comment.route");
 
 router.use("/auth", authRoute);
 
@@ -17,6 +18,8 @@ router.use("/users", userRoute);
 router.use("/tags", tagRoute);
 
 router.use("/posts", postRoute);
+
+router.use("/", commentRoute);
 
 router.use((req, res) => {
 	res.status(404).json({
