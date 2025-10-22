@@ -5,7 +5,7 @@ const app = express();
 const errorHandler = require("./middlewares/errorHandler");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-
+const swaggerDocs = require("./config/swagger");
 app.use(express.json());
 
 app.use(morgan("dev"));
@@ -14,6 +14,8 @@ app.use(cookieParser());
 app.get("/", (req, res) => {
 	res.send("Homepage");
 });
+
+swaggerDocs(app);
 
 app.use(require("./routes/index.route"));
 
