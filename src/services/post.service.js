@@ -12,9 +12,11 @@ module.exports.getAllPostsService = async (query) => {
 	const filter = { deleted: false };
 
 	const { sort = "-createdAt", tag, category } = query;
-
 	// Loc
-	if (tag) filter.tags = tag;
+	if (tag) {
+		const tagIds = Array.isArray(tag) ? tag : tag.split(",");
+		filter.tags = { $in: tagIds };
+	}
 	if (category) filter.category = category;
 
 	// Phan trang
