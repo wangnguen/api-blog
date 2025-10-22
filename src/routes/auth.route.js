@@ -3,15 +3,25 @@ const router = require("express").Router();
 const catchAsync = require("../utils/catchAsync.js");
 
 const authController = require("../controllers/auth.controller.js");
+const authValidation = require("../validations/auth.validation.js");
+
 const {
 	verifyRefreshToken,
 	verifyToken,
 } = require("../middlewares/verifyToken.js");
 const { checkRole } = require("../middlewares/auth.js");
 
-router.post("/register", catchAsync(authController.registerPost));
+router.post(
+	"/register",
+	authValidation.registerPost,
+	catchAsync(authController.registerPost),
+);
 
-router.post("/login", catchAsync(authController.loginPost));
+router.post(
+	"/login",
+	authValidation.loginPost,
+	catchAsync(authController.loginPost),
+);
 
 router.post(
 	"/logout",

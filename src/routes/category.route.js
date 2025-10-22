@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const categoryController = require("../controllers/category.controller");
+const categoryValidation = require("../validations/category.validation");
 const { checkRole } = require("../middlewares/auth");
 const { verifyToken } = require("../middlewares/verifyToken");
 
@@ -12,6 +13,7 @@ router.post(
 	"/",
 	verifyToken,
 	checkRole("admin"),
+	categoryValidation.createCategory,
 	catchAsync(categoryController.createCategory),
 );
 
@@ -21,6 +23,7 @@ router.patch(
 	"/:id",
 	verifyToken,
 	checkRole("admin"),
+	categoryValidation.createCategory,
 	catchAsync(categoryController.editCategory),
 );
 

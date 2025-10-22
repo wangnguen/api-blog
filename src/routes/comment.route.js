@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const commentController = require("../controllers/comment.controller");
+const commentValidation = require("../validations/comment.validation");
 const { checkRole } = require("../middlewares/auth");
 const { verifyToken } = require("../middlewares/verifyToken");
 const catchAsync = require("../utils/catchAsync");
@@ -14,6 +15,7 @@ router.post(
 	"/posts/:postId/comments",
 	verifyToken,
 	checkRole("user", "admin"),
+	commentValidation.createComment,
 	catchAsync(commentController.createComment),
 );
 

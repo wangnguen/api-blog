@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const postController = require("../controllers/post.controller");
+const postValidation = require("../validations/post.validation");
 const { checkRole } = require("../middlewares/auth");
 
 const { verifyToken, optionalAuth } = require("../middlewares/verifyToken");
@@ -15,6 +16,7 @@ router.post(
 	"/",
 	verifyToken,
 	checkRole("user", "admin"),
+	postValidation.createPost,
 	catchAsync(postController.createPost),
 );
 
@@ -24,6 +26,7 @@ router.patch(
 	"/:id",
 	verifyToken,
 	checkRole("user", "admin"),
+	postValidation.createPost,
 	catchAsync(postController.updatePost),
 );
 
