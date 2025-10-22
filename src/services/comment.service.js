@@ -46,11 +46,21 @@ module.exports.createCommentService = async (
 	return comment;
 };
 
-module.exports.deleteCommentService = async (id) => {
+module.exports.deleteCommentService = async (id, role, userId) => {
 	const existingComment = await Comment.findOne({ _id: id });
 
 	if (!existingComment) {
 		throw new ErrorRespone(StatusCodes.NOT_FOUND, "Comment không tồn tại");
+	}
+
+	if (
+		role !== "admin" &&
+		existingComment.userId.toString() !== userId.toString()
+	) {
+		throw new ErrorRespone(
+			StatusCodes.FORBIDDEN,
+			"Bạn không có quyền xóa comment này !",
+		);
 	}
 
 	existingComment.deleted = true;

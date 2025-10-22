@@ -63,7 +63,10 @@ module.exports.getPostDetail = async (req, res) => {
 
 module.exports.updatePost = async (req, res) => {
 	const { id } = req.params;
-	const updatedPost = await updatePostService(id, req.body);
+	const role = req.user.role;
+	const userId = req.user._id;
+
+	const updatedPost = await updatePostService(id, role, userId, req.body);
 
 	return sendSuccessResponse(
 		res,
@@ -76,7 +79,10 @@ module.exports.updatePost = async (req, res) => {
 
 module.exports.deletePost = async (req, res) => {
 	const { id } = req.params;
-	await deletePostService(id);
+	const role = req.user.role;
+	const userId = req.user._id;
+
+	await deletePostService(id, role, userId);
 
 	return sendSuccessResponse(
 		res,

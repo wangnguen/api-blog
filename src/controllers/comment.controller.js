@@ -8,7 +8,6 @@ const {
 
 module.exports.getCommentsByPost = async (req, res) => {
 	const { postId } = req.params;
-
 	const comments = await getCommentsByPostService(postId);
 
 	return sendSuccessResponse(
@@ -42,8 +41,10 @@ module.exports.createComment = async (req, res) => {
 
 module.exports.deleteComment = async (req, res) => {
 	const { id } = req.params;
+	const role = req.user.role;
+	const userId = req.user._id;
 
-	await deleteCommentService(id);
+	await deleteCommentService(id, role, userId);
 
 	return sendSuccessResponse(
 		res,

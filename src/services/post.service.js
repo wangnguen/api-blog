@@ -112,7 +112,22 @@ module.exports.getPostDetailService = async (slug, ipAddress, userId) => {
 	return existingPost;
 };
 
-module.exports.updatePostService = async (id, data) => {
+module.exports.updatePostService = async (id, role, userId, data) => {
+	const existingPost = await Post.findOne({
+		_id: id,
+		deleted: false,
+	});
+
+	if (
+		role !== "admin" &&
+		existingPost.author.toString() !== userId.toString()
+	) {
+		throw new ErrorResponse(
+			StatusCodes.FORBIDDEN,
+			"Bạn không có quyền chỉnh sửa bài viết này !",
+		);
+	}
+
 	const updatedPost = await Post.findOneAndUpdate(
 		{ _id: id, deleted: false },
 		data,
@@ -128,11 +143,18 @@ module.exports.updatePostService = async (id, data) => {
 	return updatedPost;
 };
 
-module.exports.deletePostService = async (id, data) => {
+module.exports.deletePostService = async (id, role, userId) => {
 	const updatedPost = await Post.findOne({ _id: id, deleted: false });
 
 	if (!updatedPost) {
 		throw new ErrorResponse(StatusCodes.NOT_FOUND, "Bài viết không tồn tại !");
+	}
+
+	if (role !== "admin" && updatedPost.author.toString() !== userId.toString()) {
+		throw new ErrorResponse(
+			StatusCodes.FORBIDDEN,
+			"Bạn không có quyền xóa bài viết này !",
+		);
 	}
 
 	updatedPost.deleted = true;
@@ -173,7 +195,7 @@ module.exports.toggleLikeService = async (userId, postId) => {
 		_id: postId,
 		deleted: false,
 	}).select("likesCount");
-	
+
 	return {
 		liked,
 		likesCount: updatedPost.likesCount,
