@@ -11,7 +11,7 @@ const commentRoute = require("./comment.route");
 
 router.use("/auth", authRoute);
 
-router.use("/categories", verifyToken, categoryRoute);
+router.use("/categories", categoryRoute);
 
 router.use("/users", userRoute);
 

@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const postController = require("../controllers/post.controller");
+const { checkRole } = require("../middlewares/auth");
 
 const { verifyToken, optionalAuth } = require("../middlewares/verifyToken");
 
@@ -10,15 +11,35 @@ router.get("/", catchAsync(postController.getAllPosts));
 
 router.get("/top", catchAsync(postController.getTopPosts));
 
-router.post("/", verifyToken, catchAsync(postController.createPost));
+router.post(
+	"/",
+	verifyToken,
+	checkRole("user", "admin"),
+	catchAsync(postController.createPost),
+);
 
 router.get("/:slug", optionalAuth, catchAsync(postController.getPostDetail));
 
-router.patch("/:id", verifyToken, catchAsync(postController.updatePost));
+router.patch(
+	"/:id",
+	verifyToken,
+	checkRole("user", "admin"),
+	catchAsync(postController.updatePost),
+);
 
-router.delete("/:id", verifyToken, catchAsync(postController.deletePost));
+router.delete(
+	"/:id",
+	verifyToken,
+	checkRole("user", "admin"),
+	catchAsync(postController.deletePost),
+);
 
-router.post("/:id/like", verifyToken, catchAsync(postController.toggleLike));
+router.post(
+	"/:id/like",
+	verifyToken,
+	checkRole("user", "admin"),
+	catchAsync(postController.toggleLike),
+);
 
 router.get("/:id/likes", catchAsync(postController.getLikes));
 

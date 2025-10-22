@@ -5,14 +5,21 @@ const userController = require("../controllers/user.controller");
 const { verifyToken } = require("../middlewares/verifyToken");
 const catchAsync = require("../utils/catchAsync");
 const { storageCloud } = require("../utils/cloudinary");
+const { checkRole } = require("../middlewares/auth");
 
 const upload = multer({ storage: storageCloud });
 
-router.get("/me", verifyToken, catchAsync(userController.getMe));
+router.get(
+	"/me",
+	verifyToken,
+	checkRole("user", "admin"),
+	catchAsync(userController.getMe),
+);
 
 router.patch(
 	"/me",
 	verifyToken,
+	checkRole("user", "admin"),
 	upload.single("avatar"),
 	catchAsync(userController.updateProfile),
 );
@@ -20,6 +27,7 @@ router.patch(
 router.patch(
 	"/me/change-password",
 	verifyToken,
+	checkRole("user", "admin"),
 	catchAsync(userController.changePassword),
 );
 
