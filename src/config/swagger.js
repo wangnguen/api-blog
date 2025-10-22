@@ -21,6 +21,23 @@ const options = {
 				description: "Live server",
 			},
 		],
+		components: {
+			securitySchemes: {
+				bearerAuth: {
+					type: "http",
+					scheme: "bearer",
+					bearerFormat: "JWT",
+					name: "Authorization",
+					in: "header",
+					description:
+						"Enter your bearer token in the format **Bearer &lt;token&gt;**",
+				},
+
+			},
+		},
+		security: {
+			bearerAuth: [],
+		},
 	},
 	// looks for configuration in specified directories
 	apis: [path.join("./src/routes/*.js")],
