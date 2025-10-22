@@ -49,7 +49,6 @@ const loginService = async ({ username, password }) => {
 
 	// create access token + refresh token
 	const payload = {
-		id: existingUser._id,
 		username: existingUser.username,
 	};
 

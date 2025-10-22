@@ -3,8 +3,10 @@ const jwt = require("jsonwebtoken");
 const { sendErrorResponse } = require("../helpers/apiRespone");
 const { StatusCodes } = require("http-status-codes");
 const RefreshToken = require("../models/refreshToken.model");
+const User = require("../models/user.model");
+const ErrorRespone = require("../helpers/errorRespone");
 
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
 	const authHeader = req.headers.authorization;
 	if (!authHeader)
 		return sendErrorResponse(
@@ -26,7 +28,15 @@ const verifyToken = (req, res, next) => {
 	const token = parts[1];
 	try {
 		const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-		req.user = decoded;
+		const foundedUser = await User.findOne({
+			username: decoded.username,
+		}).select("_id role username");
+
+		if (!foundedUser) {
+			throw new ErrorRespone(StatusCodes.UNAUTHORIZED, "User không tồn tại !");
+		}
+
+		req.user = foundedUser;
 		next();
 	} catch (err) {
 		return sendErrorResponse(res, "error");
@@ -61,6 +71,11 @@ const verifyRefreshToken = async (req, res, next) => {
 
 		// kiem tra het han
 		if (isMatchToken.expiresAt < new Date()) {
+			res.clearCookie("refreshToken", {
+				httpOnly: true,
+				secure: true,
+				sameSite: "strict",
+			});
 			return sendErrorResponse(
 				res,
 				"error",
@@ -70,7 +85,17 @@ const verifyRefreshToken = async (req, res, next) => {
 		}
 
 		const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
-		req.user = decoded;
+
+		const foundedUser = await User.findOne({
+			username: decoded.username,
+		}).select("_id role username");
+
+		if (!foundedUser) {
+			throw new ErrorRespone(StatusCodes.UNAUTHORIZED, "User không tồn tại !");
+		}
+
+		req.user = foundedUser;
+
 		next();
 	} catch (error) {
 		res.clearCookie("refreshToken", {
@@ -90,7 +115,18 @@ const optionalAuth = async (req, res, next) => {
 			return next();
 		}
 
-		req.user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+		const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+		const foundedUser = await User.findOne({
+			username: decoded.username,
+		}).select("_id role username");
+
+		if (!foundedUser) {
+			throw new ErrorRespone(StatusCodes.UNAUTHORIZED, "User không tồn tại !");
+		}
+
+		req.user = foundedUser;
+
 		next();
 	} catch {
 		req.user = null;
