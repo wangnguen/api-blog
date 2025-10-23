@@ -130,6 +130,8 @@ module.exports.updatePostService = async (id, role, userId, data) => {
 		);
 	}
 
+	data.slug = generateSlug(data.title);
+	
 	const updatedPost = await Post.findOneAndUpdate(
 		{ _id: id, deleted: false },
 		data,

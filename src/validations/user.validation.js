@@ -46,6 +46,7 @@ const updateProfile = (req, res, next) => {
 			"string.email": "Email không đúng định dạng!",
 		}),
 		bio: Joi.string().allow(""),
+		avatar: Joi.string().allow(""),
 	});
 
 	const { error } = schema.validate(req.body);

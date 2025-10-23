@@ -36,14 +36,17 @@ const loginService = async ({ username, password }) => {
 		username,
 	}).select("+password");
 	if (!existingUser) {
-		throw new ErrorRespone(StatusCodes.BAD_REQUEST, "Username không tồn tại !");
+		throw new ErrorRespone(
+			StatusCodes.UNAUTHORIZED,
+			"Username không tồn tại hoặc Mật khẩu không chính xác  !",
+		);
 	}
 	// check password
 	const isMatch = await existingUser.comparePassword(password.toString());
 	if (!isMatch) {
 		throw new ErrorRespone(
 			StatusCodes.UNAUTHORIZED,
-			"Mật khẩu không chính xác !",
+			"Username không tồn tại hoặc Mật khẩu không chính xác  !",
 		);
 	}
 
@@ -73,7 +76,14 @@ const loginService = async ({ username, password }) => {
 };
 
 const logoutService = async (token) => {
-	await RefreshToken.deleteOne({ token });
+	if (!token) {
+		return;
+	}
+
+	const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+	const userId = decoded.id;
+
+	await RefreshToken.deleteOne({ token, userId });
 	return;
 };
 
